@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import LinkForm from './LinkForm'
 import { db } from "../firebase";
+import { toast } from 'react-toastify'
 
 function Links() {
 
@@ -8,7 +9,14 @@ function Links() {
 
   const addOrEditLink = async (linkObject) => {
     await db.collection("links").doc().set(linkObject)
-    console.log("new link added")
+    toast("New Link Added", {type: 'success', autoClose: 2000})
+  }
+
+  const onDeleteLink = async ({id, name}) => {
+    if (window.confirm(`Are you sure you want to delete the link: ${name}?`)) {
+      await db.collection("links").doc(id).delete()
+      toast("Link Deleted Successfully", {type: 'error', autoClose: 2000})
+    }
   }
 
   const getLinks = () => {
@@ -41,8 +49,14 @@ function Links() {
         {
           links.map((link, index) => (
             <div key={index} className="card p-2 my-1">
-                <div className='card card-body'>
-                <h4>{link.name}</h4>
+              <div className='card card-body'>
+                <div className='d-flex justify-content-between'>
+                  <h4>{link.name}</h4>
+                  <i
+                    className='material-icons text-danger'
+                    onClick={() => onDeleteLink(link)}
+                  >close</i>
+                </div>
                 <p>{link.description}</p>
                 <a href={link.url} target="_blank" rel="noreferrer">Go to Website</a>
               </div>
