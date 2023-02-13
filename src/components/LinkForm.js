@@ -11,6 +11,7 @@ function LinkForm(props) {
   }
 
   const [values, setValues] = useState(initialStateValues)
+  const [linkId, SetLinkId] = useState("")
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -21,7 +22,7 @@ function LinkForm(props) {
     return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(str);
   }
 
-  const handleSubmit = (e) => {
+  const handleForm = (e) => {
     e.preventDefault()
     console.log(validateURL(values.url)) 
     if(!validateURL(values.url)){
@@ -29,6 +30,7 @@ function LinkForm(props) {
     } else {
       props.addOrEditLink(values)
       setValues({...initialStateValues})
+      SetLinkId("")
     }
   }
 
@@ -38,16 +40,24 @@ function LinkForm(props) {
     setValues({...link.data()})
   }
 
+  const handleCancel = (e) => {
+    e.preventDefault()
+    props.changeCurrentId()
+    SetLinkId("")
+    setValues({...initialStateValues})
+  }
+
   useEffect(() => {
     if(props.currentId === ''){
       setValues({...initialStateValues})
     } else {
+      SetLinkId(props.currentId)
       getLinkById(props.currentId)
     }
   }, [props.currentId])
 
   return (
-      <form onSubmit={handleSubmit} className='card card-body'>
+      <form className='card card-body'>
 
         <div className="form-group input-group my-1">
           <div className="input-group-text bg-light">
@@ -85,10 +95,16 @@ function LinkForm(props) {
             value={values.description}
           ></textarea>
         </div>
-        <button className='btn btn-primary btn-block'>
-          {props.currentId === '' ? 'Save' : 'Update'}
-        </button>
-        
+        <button
+          className='btn btn-primary btn-block'
+          onClick={handleForm}
+        >{linkId === '' ? 'Save' : 'Update'}</button>
+        <button 
+          className='btn btn-danger btn-block my-1'
+          onClick={handleCancel}
+          style = {{display: linkId ? "block" : "none"}}
+        >Cancel</button>
+
       </form>
   )
 }

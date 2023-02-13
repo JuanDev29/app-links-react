@@ -23,6 +23,10 @@ function Links() {
     }
   }
 
+  const changeCurrentId = () => {
+    setCurrentId('')
+  }
+
   const onDeleteLink = async ({id, name}) => {
     if (window.confirm(`Are you sure you want to delete the link: ${name}?`)) {
       await db.collection("links").doc(id).delete()
@@ -51,7 +55,7 @@ function Links() {
   return (
     <div>
       <div className="col-md-4 p-2 my-1 mx-auto">
-        <LinkForm {...{addOrEditLink, links, currentId}} />
+        <LinkForm {...{addOrEditLink, changeCurrentId, links, currentId}} />
       </div>
       <h2 className='mt-3 mb-0 text-warning text-center'>Links</h2>
       <div className="col-md-8 p-2 my-1 mx-auto">
